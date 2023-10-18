@@ -44,7 +44,7 @@ export class UsersController {
   })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   findAll(@Query() paginationDto: PaginationDto) {
-    return this.client.send({ cmd: 'print' }, { paginationDto });
+    return this.client.send(UserCmd.GET_ALL, { paginationDto });
   }
 
   @Get(':id')
@@ -62,11 +62,6 @@ export class UsersController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 404, description: 'User not found' })
   findOne(@Param('id', ParseUUIDPipe) id: string, @GetUser() user: User) {
-    if (user.id !== id || ValidRoles.ADMIN in user.roles) {
-      throw new UnauthorizedException(
-        'You are not authorized to view this user',
-      );
-    }
     return this.client.send(UserCmd.GET_ONE, {
       id,
     });
@@ -91,11 +86,6 @@ export class UsersController {
     @GetUser() user: User,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    if (user.id !== id) {
-      throw new UnauthorizedException(
-        'You are not authorized to update this user',
-      );
-    }
     return this.client.send(UserCmd.UPDATE, {
       id,
       updateUserDto,

@@ -141,11 +141,11 @@ export class TasksController {
   @ApiResponse({ status: 400, description: 'Bad request' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 404, description: 'Task not found' })
-  async remove(
+  remove(
     @Param('id', ParseUUIDPipe) id: string,
     @GetUser(['id']) userId: string,
   ) {
-    this.client.send(TaskCmd.DELETE, {
+    return this.client.send(TaskCmd.DELETE, {
       id,
       userId,
     });
