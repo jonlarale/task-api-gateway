@@ -9,6 +9,7 @@ import {
   Inject,
   ParseUUIDPipe,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { ApiResponse, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
@@ -19,10 +20,14 @@ import { ErrorResponseDto } from 'src/common/dtos/error-response.dto';
 import { PaginationDto } from '../common/dtos/pagination.dto';
 import { GetUser } from '../auth/decorators/get-user.decorator';
 import { TaskCmd } from './enums/task-cmd.enum';
+import { Auth } from '../auth/decorators/auth.decorator';
+import { ValidRoles } from '../auth/enums/valid-roles.enum';
+import { AuthGuard } from '../auth/guards/auth.guard';
 
 @ApiTags('Tasks')
 @ApiBearerAuth()
 @Controller('tasks')
+@UseGuards(AuthGuard)
 export class TasksController {
   constructor(
     @Inject('MANAGEMENT_SERVICE') private readonly client: ClientProxy,
@@ -44,7 +49,7 @@ export class TasksController {
     @Body() createTaskDto: CreateTaskDto,
     @GetUser(['id']) userId: string,
   ) {
-    this.client.send(TaskCmd.CREATE, {
+    return this.client.send(TaskCmd.CREATE, {
       createTaskDto,
       userId,
     });
@@ -65,11 +70,12 @@ export class TasksController {
     status: 401,
     description: 'Unauthorized',
   })
+  @Auth(ValidRoles.USER)
   findAll(
     @Query() paginationDto: PaginationDto,
     @GetUser(['id']) userId: string,
   ) {
-    this.client.send(TaskCmd.GET_ALL, {
+    return this.client.send(TaskCmd.GET_ALL, {
       paginationDto,
       userId,
     });
@@ -92,7 +98,7 @@ export class TasksController {
     @Param('id', ParseUUIDPipe) id: string,
     @GetUser(['id']) userId: string,
   ) {
-    this.client.send(TaskCmd.GET_ONE, {
+    return this.client.send(TaskCmd.GET_ONE, {
       id,
       userId,
     });
@@ -119,7 +125,7 @@ export class TasksController {
     @Body() updateTaskDto: UpdateTaskDto,
     @GetUser(['id']) userId: string,
   ) {
-    this.client.send(TaskCmd.UPDATE, {
+    return this.client.send(TaskCmd.UPDATE, {
       id,
       updateTaskDto,
       userId,
