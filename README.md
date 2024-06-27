@@ -2,7 +2,7 @@
 
 ## Description
 
-This is the API Gateway for the Tasks API. It is responsible for authenticating the users and forwarding the requests to the Tasks API.
+This is a gateway API for Task API Management: [https://github.com/jonlarale/tasks-api-management](https://github.com/jonlarale/tasks-api-management). It is responsible for authenticating the users and forwarding the requests to the Tasks API.
 
 ## Installation
 
